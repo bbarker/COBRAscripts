@@ -3,9 +3,21 @@
 Rev1: - variations of WT growth rate for each condition
       - variations of mutational severity (did we do this)?
 
-
 Rev2: basically the same
-
   
 
 Can we do any sort of random samply approach, or cite our previous paper?
+
+Three alternatives:
+1) Extesnive sampling across a subset of genes
+2) Random sampling of gene pairs (exclude those without any known epistasis),
+   WT level, and mutation level (same for both pairs?).
+   - Won't sample all 16 conditions for a single gene, but will cover most genes.
+   - How to use for stable versus dynamic epistasis? - Just see how 
+     stable epistasis (sign?) is across various percentages. We can also cite
+     our previous paper, which shows that only extremely deleterious mutations
+     tend to cause a strong change in the percentage of epistasis (might be the
+     unpublished figure - which we tried to include in the PLOS CB revision).
+   - Can still get an idea of mean and variance of differential epistasis 
+     for each gene. 
+   - Similar to adaptive epistasis code (may be good to integrate).
