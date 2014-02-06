@@ -28,5 +28,5 @@ mmIrr = convertToIrreversible(mm);
 Fraction of pyruvate flux to ethanol = 
 
   PDC Flux             ADH Flux
------------------ * ---------------------  (need to verify these rxns and 
-Pyruvate Produced   (ADH Flux  + ALD Flux)  account for compartments)
+----------------- * ---------------------  (need to verify these rxns (i.e. that there aren't any other  
+Pyruvate Produced   (ADH Flux  + ALD Flux)  acetaldehyde producing rxns) and account for compartments)
