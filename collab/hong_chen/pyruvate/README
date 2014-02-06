@@ -7,6 +7,7 @@ metabolites, e.g., for pyruvate:
 find(strcmp(mmIrr.metNames, 'Pyruvate'))
 mmIrr.mets(find(strcmp(mmIrr.metNames, 'Pyruvate')))
 
+
 Alternatively, do all this automatically by correcting for duplicates
 and detecting exchange/transport reactions.
 
@@ -22,3 +23,10 @@ mmIrr = convertToIrreversible(mm);
 
 [pdc, biomvec, eth] = SSPyruvateAll(mmIrr, 727, 0.1, 20, 0.3);
 [pdc, biomvec, eth] = SSPyruvateAll(mmIrr, 797, 0.1, 28, 0.3);
+
+----
+Fraction of pyruvate flux to ethanol = 
+
+  PDC Flux             ADH Flux
+----------------- * ---------------------  (need to verify these rxns and 
+Pyruvate Produced   (ADH Flux  + ALD Flux)  account for compartments)
