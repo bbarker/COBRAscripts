@@ -1,4 +1,8 @@
 function [qVecStart, pathInfo] = linPathFlux(m, varargin)
+% TODO:
+% Remove transport and exchange rxns from analysis
+%
+%
 % Measures attribution of a (metabolite) flux along a linear
 % pathway in terms of the start of the pathway. 
 %
@@ -48,7 +52,7 @@ p.addParamValue('rxns', {}, @IPcheck_rxns);
 
 
 p.parse(m, varargin{:});
-arg = p.Results
+arg = p.Results;
 
 linPathRxns = cell(1, length(arg.linPath)-1);
 linPathSubs = cell(1, length(arg.linPath)-1);
@@ -66,14 +70,16 @@ for i = 1:(pathLen-1)
     %Get all forward reactions
     for j = 1:length(substrates)
         s = substrates(j);
-        allOutRxns{i} = find((arg.m.S(s, :) < 0));
-        allOutSubs{i} = -arg.m.S(s, allOutRxns{i});
+        AsRxns = find((arg.m.S(s, :) < 0));
+        allOutRxns{i} = [allOutRxns{i} AsRxns];
+        allOutSubs{i} = [allOutSubs{i} full(-arg.m.S(s, AsRxns))];
+        spRxns = [];
         for k = 1:length(products)
             p = products(k);
-            linPathRxns{i} = union(linPathRxns{i}, ...
-                find((arg.m.S(s, :) < 0) & (arg.m.S(p, :) > 0)));
-            linPathSubs{i} = -arg.m.S(s, linPathRxns{i});
+            spRxns = [spRxns find((arg.m.S(s, :) < 0) & (arg.m.S(p, :) > 0))];
         end
+        linPathRxns{i} = [linPathRxns{i} spRxns];
+        linPathSubs{i} = [linPathSubs{i} full(-arg.m.S(s, spRxns))];
     end
 end
 
@@ -99,10 +105,10 @@ for i = 1:(pathLen-1)
     % We need to account for substrate stoichiometry coefficients
     % when we are looking for amount of X converted to Y.
     idx = linPathRxns{i}
-    adx = allOutRxns{i}; 
-    is = linPathSubs{i};
-    as = allOutSubs{i};
-    qVecPrior(i) = (arg.flux(idx)' * is') / (arg.flux(adx)' * as');
+    adx = allOutRxns{i} 
+    is = linPathSubs{i}
+    as = allOutSubs{i}
+    qVecPrior(i) = (arg.flux(idx)' * is') / (arg.flux(adx)' * as')
     if i > 1
         qVecStart(i) = qVecPrior(i) * qVecStart(i-1); 
     else
