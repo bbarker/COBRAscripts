@@ -1,6 +1,4 @@
-function [qVecStart, qVecPrior] = linPathFlux(m, varargin)
-qVecStart = 0;
-qVecPrior = 0;
+function [qVecStart, pathInfo] = linPathFlux(m, varargin)
 % Measures attribution of a (metabolite) flux along a linear
 % pathway in terms of the start of the pathway. 
 %
@@ -30,6 +28,8 @@ p.addRequired('linPath', @IPcheck_linPath);
 % A cell array of metNames or alternatively may contain
 % some rxn ids as a cell array of rxn ids, where
 % 
+p.addRequired('flux', @IPcheck_NumVec);
+% irreversible model flux vector
 %
 %%% Optional INPUT %%%
 %
@@ -50,9 +50,15 @@ p.addParamValue('rxns', {}, @IPcheck_rxns);
 p.parse(m, varargin{:});
 arg = p.Results
 
-%Convert linPath into reaction sets.
 linPathRxns = cell(1, length(arg.linPath)-1);
+linPathSubs = cell(1, length(arg.linPath)-1);
+allOutRxns  = cell(1, length(arg.linPath)-1);
+allOutSubs  = cell(1, length(arg.linPath)-1);
+qVecStart = zeros(1, length(arg.linPath)-1);
+qVecPrior = zeros(1, length(arg.linPath)-1);
 pathLen = length(arg.linPath);
+%Convert linPath into reaction sets.
+%Also list alternative branch points and |substrate coeffs|.
 for i = 1:(pathLen-1)
     %Get all substrates
     substrates = find(strcmp(arg.m.metNames, arg.linPath{i}));
@@ -60,13 +66,15 @@ for i = 1:(pathLen-1)
     %Get all forward reactions
     for j = 1:length(substrates)
         s = substrates(j);
+        allOutRxns{i} = find((arg.m.S(s, :) < 0));
+        allOutSubs{i} = -arg.m.S(s, allOutRxns{i});
         for k = 1:length(products)
             p = products(k);
             linPathRxns{i} = union(linPathRxns{i}, ...
                 find((arg.m.S(s, :) < 0) & (arg.m.S(p, :) > 0)));
+            linPathSubs{i} = -arg.m.S(s, linPathRxns{i});
         end
     end
-    linPathRxns{i} = setdiff(linPathRxns{i}, [0]);
 end
 
 %Optionally, if reaction sets are explicitly listed for any
@@ -83,6 +91,31 @@ if length(arg.rxns) > 0
     end
 end
 
+% For each step in the pathway, compute the 
+% proportion of metabolite flux going in to the 
+% next metabolite.
+
+for i = 1:(pathLen-1)    
+    % We need to account for substrate stoichiometry coefficients
+    % when we are looking for amount of X converted to Y.
+    idx = linPathRxns{i}
+    adx = allOutRxns{i}; 
+    is = linPathSubs{i};
+    as = allOutSubs{i};
+    qVecPrior(i) = (arg.flux(idx)' * is') / (arg.flux(adx)' * as');
+    if i > 1
+        qVecStart(i) = qVecPrior(i) * qVecStart(i-1); 
+    else
+        qVecStart(i) = qVecPrior(i);
+    end 
+end
+
+pathInfo.linPathRxns = linPathRxns;
+pathInfo.linPathSubs = linPathSubs;
+pathInfo.allOutRxns = allOutRxns;
+pathInfo.allOutSubs = allOutSubs;
+pathInfo.qVecStart = qVecStart;
+pathInfo.qVecPrior = qVecPrior;
 end % of linPathFlux
 
 %%%%%%%%%%%%%     Input Parser Functions     %%%%%%%%%%%%%
@@ -112,5 +145,15 @@ if ~islogical(x) || ~isvector(x)
     error('input is not a logical vector');
 end
 end % of IPcheck_boolVec
+
+function TF = IPcheck_NumVec(x)
+TF = true;
+if ~isvector(x)
+    error('flux must be a vector.')
+elseif ~isnumeric(x)
+    disp(x)
+    error('flux must be numeric.')
+end
+end % end of IPcheck_NumVec
 
 %%%%%%%%%%%%%   End Input Parser Functions   %%%%%%%%%%%%%
