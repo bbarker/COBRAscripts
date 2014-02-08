@@ -1,6 +1,4 @@
 function [qVecStart, pathInfo] = linPathFlux(m, varargin)
-% TODO:
-% Remove transport and exchange rxns from analysis
 %
 % Key Assumption: metNames in model correspond to 
 % the same metabolite in different compartments
@@ -8,10 +6,10 @@ function [qVecStart, pathInfo] = linPathFlux(m, varargin)
 % Measures attribution of a (metabolite) flux along a linear
 % pathway in terms of the start of the pathway. 
 %
-% There are two ways to look at this:
-% 1) Percent of X converted to Y along pathway X...Y
-% 2) Percent of Y derived from X along pathway X...Y
-% For now we focus only on 1.
+% There are two related analyeses:
+% 1) Fraction of X_0 converted to X_n along pathway X_0...X_n
+% 2) Fraction of X_n derived from X_0 along pathway X_0...X_n
+% For now only (1) is implemented.
 %
 % metNames are used to define pathways as these are the most
 % general possibility and can even encompass multiple compartments; 
@@ -45,17 +43,19 @@ p.addParamValue('rxns', {}, @IPcheck_rxns);
 % OUTPUT
 %
 %qVecStart
-% The ratio of flux at each point in the pathway that 
-% can be attributed to the initial (metabolite) flux
+% (1) The fraction of X_0 that is converted in to X_i. 
+% (2) The fraction of X_i that is derived from X_0.
 %
 %qVecPrior
-% The ratio of flux at each point in the pathway that 
-% can be attributed to the previous flux in the pathway
-
+% (1) The fraction of X_(i-1) that is converted to X_i.
+% (2) The fraction of X_i that is derived from X_(i-1).
 
 p.parse(m, varargin{:});
 arg = p.Results;
 
+% Used to remove transport and exchange reactions from all relevant vectors.
+transExcRxns = findTransRxns(arg.m, true, [1:size(arg.m.S, 2)], true, true);
+[~, transExcIdxs] = ismember(transExcRxns, arg.m.rxns);
 
 linPathRxns = cell(1, length(arg.linPath)-1);
 linPathSubs = cell(1, length(arg.linPath)-1);
@@ -73,7 +73,7 @@ for i = 1:(pathLen-1)
     %Get all forward reactions
     for j = 1:length(substrates)
         s = substrates(j);
-        AsRxns = find((arg.m.S(s, :) < 0));
+        AsRxns = setdiff(find((arg.m.S(s, :) < 0)), transExcIdxs);
         allOutRxns{i} = [allOutRxns{i} AsRxns];
         allOutSubs{i} = [allOutSubs{i} full(-arg.m.S(s, AsRxns))];
         spRxns = [];
@@ -81,13 +81,11 @@ for i = 1:(pathLen-1)
             p = products(k);
             spRxns = [spRxns find((arg.m.S(s, :) < 0) & (arg.m.S(p, :) > 0))];
         end
+        spRxns = setdiff(spRxns, transExcIdxs);
         linPathRxns{i} = [linPathRxns{i} spRxns];
         linPathSubs{i} = [linPathSubs{i} full(-arg.m.S(s, spRxns))];
     end
 end
-
-% Remove transport and exchange reactions from all relevant vectors.
-transExcRxns = findTransRxns(arg.m, true, [1:size(arg.m.S, 2)], true, true);
 
 
 %Optionally, if reaction sets are explicitly listed for any
@@ -107,7 +105,6 @@ end
 % For each step in the pathway, compute the 
 % proportion of metabolite flux going in to the 
 % next metabolite.
-
 for i = 1:(pathLen-1)    
     % We need to account for substrate stoichiometry coefficients
     % when we are looking for amount of X converted to Y.
