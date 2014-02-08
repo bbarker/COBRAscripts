@@ -2,6 +2,8 @@ function [qVecStart, pathInfo] = linPathFlux(m, varargin)
 % TODO:
 % Remove transport and exchange rxns from analysis
 %
+% Key Assumption: metNames in model correspond to 
+% the same metabolite in different compartments
 %
 % Measures attribution of a (metabolite) flux along a linear
 % pathway in terms of the start of the pathway. 
@@ -54,6 +56,7 @@ p.addParamValue('rxns', {}, @IPcheck_rxns);
 p.parse(m, varargin{:});
 arg = p.Results;
 
+
 linPathRxns = cell(1, length(arg.linPath)-1);
 linPathSubs = cell(1, length(arg.linPath)-1);
 allOutRxns  = cell(1, length(arg.linPath)-1);
@@ -82,6 +85,10 @@ for i = 1:(pathLen-1)
         linPathSubs{i} = [linPathSubs{i} full(-arg.m.S(s, spRxns))];
     end
 end
+
+% Remove transport and exchange reactions from all relevant vectors.
+transExcRxns = findTransRxns(arg.m, true, [1:size(arg.m.S, 2)], true, true);
+
 
 %Optionally, if reaction sets are explicitly listed for any
 %pathway components, override with them here:
