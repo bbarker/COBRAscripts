@@ -44,13 +44,13 @@ OxygenRxnsBack = rNameBack(OxygenRxns);
 %
 %
 
-O2Upt = rxnIdxFromNames(mRev, OxygenRxns); 
-mRev.lb(O2Upt) = -2; % low default found in iMM904
+O2UptRev = rxnIdxFromNames(mRev, OxygenRxns); 
+mRev.lb(O2UptRev) = -2; % low default found in iMM904
 
-pyrUpt = rxnIdxFromNames(mRev, PyruvateRxns); 
-mRev.lb(pyrUpt) = -1; % set for convertToIrreversible
+pyrUptRev = rxnIdxFromNames(mRev, PyruvateRxns); 
+mRev.lb(pyrUptRev) = -1; % set for convertToIrreversible
 
-glucUpt = rxnIdxFromNames(mRev, GlucoseRxns); 
+glucUptRev = rxnIdxFromNames(mRev, GlucoseRxns); 
 %no need to set it here
 
 %
