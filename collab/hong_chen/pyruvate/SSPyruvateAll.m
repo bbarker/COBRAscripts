@@ -12,7 +12,7 @@ function [qMat, fluxMat] = SSPyruvateAll(mRev, itermet, initF, finalF, step, lin
 
 minGlucose = 0.1; %Need some glucose to grow in some models.
 
-if ~exist('linPath', 'vars')
+if ~exist('linPath', 'var')
     linPath = {'Pyruvate', 'Acetaldehyde', 'Ethanol'}; %iMM904
 end
 
@@ -46,10 +46,10 @@ OxygenRxnsBack = rNameBack(OxygenRxns);
 
 O2UptRev = rxnIdxFromNames(mRev, OxygenRxns); 
 mRev.lb(O2UptRev) = -2; % low default found in iMM904
-
+%
 pyrUptRev = rxnIdxFromNames(mRev, PyruvateRxns); 
 mRev.lb(pyrUptRev) = -1; % set for convertToIrreversible
-
+%
 glucUptRev = rxnIdxFromNames(mRev, GlucoseRxns); 
 %no need to set it here
 
@@ -77,28 +77,24 @@ end
 nIter = floor((finalF-initF)/step) + 1;
 pathLen = length(linPath);
 m.lb(itermet) = initF;
-pdc = zeros(length(pyrRxns), nIter);
-eth = zeros(length(ethRxns) + 1, nIter);
 qMat = zeros(nIter, pathLen - 1);
 fluxMat = zeros(nRxns, nIter);
-biomvec = zeros(1, nIter);
 
 pathInfo = [];
-for i =1:nIter
-  m.ub(itermet) = 1 * (initF + (i-1)*step);
-  disp(m.ub(itermet));
-  solt = optimizeCbModel(m, 'max', 'one');
-  %pdcratio = solt.x(pyrRxns)/sum(solt.x(pyrRxns));
-  %pdc(:, i) = pdcratio';
-  [qVec, pathInfo] = linPathFlux(mIrr, linPath, solt.x);
-  pdc(:, i) = solt.x(pyrRxns); %easy to calculate ratio later.
-  ethsum = sum(solt.x(ethRxns));
-  eth(:, i) = [solt.x(ethRxns)' ethsum]';
-  biomvec(i) = solt.f;
+for i = 1:nIter
+    m.ub(itermet) = 1 * (initF + (i-1)*step);
+    disp(m.ub(itermet));
+    solt = optimizeCbModel(m, 'max', 'one');
+    [qVec, pathInfo] = linPathFlux(m, linPath, solt.x);
+    qMat(i, :) = qVec;
+    fluxMat(:, i) = solt.x;
 end
 
-save(['PyruvateAll_' m.rxnNames{itermet} '_' num2str(nIter) '.mat'], ...
-      'qMat', 'fluxMat', 'pathInfo');
+modName = strrep(strrep(strrep(strrep(num2str(m.description), ' ', ''), ...
+          '.', ''), 'xml', ''), '_', '');
+
+save(['PyruvateAll_' modName '_' m.rxnNames{itermet} '_' ...
+      num2str(nIter) '.mat'], 'qMat', 'fluxMat', 'pathInfo');
 
 
 end % of SSPyruvateAll

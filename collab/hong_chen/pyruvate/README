@@ -4,12 +4,9 @@
 
 Usual commands to run:
 
-%Need this for conversion to irreversible:
-pexc = find(strcmp(mm.rxnNames, 'Pyruvate exchange'))
-mm.lb(pexc) = -28;
-mmIrr = convertToIrreversible(mm);
+mm; % the iMM904 model
 
-[pdc, biomvec, eth] = SSPyruvateAll(mmIrr, 727, 0.1, 20, 0.3);
-[pdc, biomvec, eth] = SSPyruvateAll(mmIrr, 797, 0.1, 28, 0.3);
+[qMat, fluxMat] = SSPyruvateAll(mm, 'glucose', 0.1, 20, 0.3);
+[qMat, fluxMat] = SSPyruvateAll(mm, 'pyruvate', 0.1, 28, 0.3);
 
-
+Oddly, gurobi had trouble on one of the pyruvate simulations; GLPK worked fine.

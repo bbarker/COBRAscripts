@@ -108,11 +108,11 @@ end
 for i = 1:(pathLen-1)    
     % We need to account for substrate stoichiometry coefficients
     % when we are looking for amount of X converted to Y.
-    idx = linPathRxns{i}
-    adx = allOutRxns{i} 
-    is = linPathSubs{i}
-    as = allOutSubs{i}
-    qVecPrior(i) = (arg.flux(idx)' * is') / (arg.flux(adx)' * as')
+    idx = linPathRxns{i};
+    adx = allOutRxns{i};
+    is = linPathSubs{i};
+    as = allOutSubs{i};
+    qVecPrior(i) = (arg.flux(idx)' * is') / (arg.flux(adx)' * as');
     if i > 1
         qVecStart(i) = qVecPrior(i) * qVecStart(i-1); 
     else
