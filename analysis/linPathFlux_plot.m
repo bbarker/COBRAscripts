@@ -46,7 +46,7 @@ else
     ylabel('Fraction of pathway entry metabolite converted.');
 end
 
-if exit('linPath', 'var')
+if exist('linPath', 'var')
     legEntries = cell(1, pathLenM1);
     for i = 1:pathLenM1
         legEntries{i} = [linPath{i} ' -> ' linPath{i+1}]; 
