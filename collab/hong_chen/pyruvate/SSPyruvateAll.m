@@ -10,7 +10,7 @@ function [qMat, fluxMat] = SSPyruvateAll(mRev, itermet, initF, finalF, step, lin
 % itermet : usually a carbon source (e.g. 'glucose' or 'pyruvate')
 %
 
-minGlucose = 0.1; %Need some glucose to grow in some models.
+minGlucose = 0.5; %Need some glucose to grow in some models.
 
 if ~exist('linPath', 'var')
     linPath = {'Pyruvate', 'Acetaldehyde', 'Ethanol'}; %iMM904

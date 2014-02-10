@@ -40,7 +40,7 @@ for i = pathLenM1:-1:1
     plot(xVec, qMat(:, i)', 'Color', iColor, 'LineWidth', 3);
 end
 xlabel(xLabel);
-if exist(linPath, 'var')
+if exist('linPath', 'var')
     ylabel(['Fraction of ' linPath{1} ' converted.']);
 else
     ylabel('Fraction of pathway entry metabolite converted.');
