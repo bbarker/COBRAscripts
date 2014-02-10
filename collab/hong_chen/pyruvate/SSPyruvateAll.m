@@ -81,11 +81,12 @@ qMat = zeros(nIter, pathLen - 1);
 fluxMat = zeros(nRxns, nIter);
 
 pathInfo = [];
-for i = 1:nIter
-    m.ub(itermet) = 1 * (initF + (i-1)*step);
-    disp(m.ub(itermet));
-    solt = optimizeCbModel(m, 'max', 'one');
-    [qVec, pathInfo] = linPathFlux(m, linPath, solt.x);
+parfor i = 1:nIter
+    mt = m;
+    mt.ub(itermet) = 1 * (initF + (i-1)*step);
+    disp(mt.ub(itermet));
+    solt = optimizeCbModel(mt, 'max', 'one');
+    [qVec, pathInfo] = linPathFlux(mt, linPath, solt.x);
     qMat(i, :) = qVec;
     fluxMat(:, i) = solt.x;
 end
