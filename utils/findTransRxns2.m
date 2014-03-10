@@ -47,19 +47,34 @@ else
 end
 
 %boundaryRxns = find(  sum(boolean(Sabs)) == 1  );
-%istrans(boundaryRxns) = 1;
+% use isExc instead for now
+%
+isNonexchTrans = isTransport(model, rxnInds);
 
 
-function istrans = isTransport(model, rxnNum, metName)
+% get rxn abbreviations for all rxns in rxnInds
+rxnAbbrevs=model.rxns(rxnInds);
+% if inclExc==1, exchange rxns will have isExc==1, and should be counted as
+% transport rxns; else, all isExc will be 0.
+transRxns = rxnAbbrevs(isNonexchTrans==1 | isExc==1);
+nonTransRxns = setdiff(rxnAbbrevs, transRxns);
+
+end % end of findTransRxns2
+
+function istrans = isTransport(model, rxnNum)
 Sabs = abs(model.S);
 nmrxns = length(rxnNum);
 istrans = zeros(1,nmrxns);
 for i = 1:nmrxns
     rxnmets = find(model.S(:, rxnNum(i)));
     rxnMetNames = model.metNames(rxnmets);
-    nameMatches = find(strcmp(rxnMetNames, metName));
-    if length(nameMatches) > 1
-        istrans(i) = 1;
+    for j = 1:length(rxnMetNames)
+        metName = rxnMetNames{j};
+        nameMatches = find(strcmp(rxnMetNames, metName));
+        if length(nameMatches) > 1
+            istrans(i) = 1;
+            continue;
+        end
     end
 end
 end % End of isTransport
