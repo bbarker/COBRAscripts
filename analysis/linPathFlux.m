@@ -53,8 +53,16 @@ p.addParamValue('rxns', {}, @IPcheck_rxns);
 p.parse(m, varargin{:});
 arg = p.Results;
 
+%If model includes compartment identifiers, remove these:
+for i = 1:length(arg.m.metNames)
+    %Yeast 7 style:
+    arg.m.metNames{i} = regexprep(arg.m.metNames{i}, ...
+        '(\s+)?\[.+\](\s+)?$', '');
+end
+
 % Used to remove transport and exchange reactions from all relevant vectors.
-transExcRxns = findTransRxns(arg.m, true, [1:size(arg.m.S, 2)], true, true);
+% Now using findTransRxns2 instead of findTransRxns.
+transExcRxns = findTransRxns2(arg.m, true, [1:size(arg.m.S, 2)], true, true);
 [~, transExcIdxs] = ismember(transExcRxns, arg.m.rxns);
 
 linPathRxns = cell(1, length(arg.linPath)-1);
@@ -68,8 +76,8 @@ pathLen = length(arg.linPath);
 %Also list alternative branch points and |substrate coeffs|.
 for i = 1:(pathLen-1)
     %Get all substrates
-    substrates = find(strcmp(arg.m.metNames, arg.linPath{i}));
-    products   = find(strcmp(arg.m.metNames, arg.linPath{i+1}));
+    substrates = find(strcmpi(arg.m.metNames, arg.linPath{i}));
+    products   = find(strcmpi(arg.m.metNames, arg.linPath{i+1}));
     %Get all forward reactions
     for j = 1:length(substrates)
         s = substrates(j);
@@ -96,7 +104,7 @@ if length(arg.rxns) > 0
 	for j = 1:length(linPathRxns{i})
             if length(arg.rxns{i}(j)) > 0
 	        linPathRxns{i}(j) = ...
-                    find(strcmp(arg.m.metNames, arg.rxns{i}(j)));
+                    find(strcmpi(arg.m.metNames, arg.rxns{i}(j)));
             end
 	end
     end
@@ -112,12 +120,16 @@ for i = 1:(pathLen-1)
     adx = allOutRxns{i};
     is = linPathSubs{i};
     as = allOutSubs{i};
-    qVecPrior(i) = (arg.flux(idx)' * is') / (arg.flux(adx)' * as');
-    if i > 1
-        qVecStart(i) = qVecPrior(i) * qVecStart(i-1); 
+    if length(idx) > 0
+        qVecPrior(i) = (arg.flux(idx)' * is') / (arg.flux(adx)' * as');
+        if i > 1
+            qVecStart(i) = qVecPrior(i) * qVecStart(i-1); 
+        else
+            qVecStart(i) = qVecPrior(i);
+        end 
     else
-        qVecStart(i) = qVecPrior(i);
-    end 
+        disp('Warning: it is likely you specified the wrong metName.');
+    end
 end
 
 pathInfo.linPathRxns = linPathRxns;

@@ -47,11 +47,11 @@ else
 end
 
 
-%I f model includes compartment identifiers, remove these:
+%If model includes compartment identifiers, remove these:
 for i = 1:length(model.metNames)
     %Yeast 7 style:
     model.metNames{i} = regexprep(model.metNames{i}, ...
-        '(\s+)?\[.+](\s+)?$', '');
+        '(\s+)?\[.+\](\s+)?$', '');
 end
 
 %boundaryRxns = find(  sum(boolean(Sabs)) == 1  );
