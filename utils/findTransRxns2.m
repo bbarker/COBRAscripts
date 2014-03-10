@@ -46,6 +46,14 @@ else
     isExc = zeros(length(rxnInds), 1);
 end
 
+
+%I f model includes compartment identifiers, remove these:
+for i = 1:length(model.metNames)
+    %Yeast 7 style:
+    model.metNames{i} = regexprep(model.metNames{i}, ...
+        '(\s+)?\[.+](\s+)?$', '');
+end
+
 %boundaryRxns = find(  sum(boolean(Sabs)) == 1  );
 % use isExc instead for now
 %
@@ -64,7 +72,7 @@ end % end of findTransRxns2
 function istrans = isTransport(model, rxnNum)
 Sabs = abs(model.S);
 nmrxns = length(rxnNum);
-istrans = zeros(1,nmrxns);
+istrans = zeros(nmrxns, 1);
 for i = 1:nmrxns
     rxnmets = find(model.S(:, rxnNum(i)));
     rxnMetNames = model.metNames(rxnmets);
