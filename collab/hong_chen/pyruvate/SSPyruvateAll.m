@@ -67,10 +67,13 @@ glucUpt = rxnIdxFromNames(m, GlucoseRxnsBack);
 
 %Not enough options to worry about using a map for now.
 if strcmp(itermet, 'pyruvate')
-    itermet = pyrUpt;
+    itermet = pyrUpt
+    itermetName = m.rxnNames(itermet)
     m.ub(glucUpt) = minGlucose; %need some glucose
+    glucUpt = glucUpt
 elseif strcmp(itermet, 'glucose')
-    itermet = glucUpt;
+    itermet = glucUpt
+    itermetName = m.rxnNames(itermet)
     m.ub(pyrUpt) = 0;
 end
 
@@ -85,7 +88,17 @@ parfor i = 1:nIter
     mt = m;
     mt.ub(itermet) = 1 * (initF + (i-1)*step);
     disp(mt.ub(itermet));
+    % save('mt.mat', 'mt'); %for debugging
     solt = optimizeCbModel(mt, 'max', 'one');
+    if solt.stat ~= 1
+        %solt = optimizeCbModel(mt, 'max', '1e-6');
+        changeCobraSolver('glpk', 'LP');
+        solt = optimizeCbModel(mt, 'max', 'one');
+        changeCobraSolver('gurobi5', 'LP');
+        if solt.stat ~= 1
+            solt = optimizeCbModel(mt, 'max');
+        end
+    end
     [qVec, pathInfo] = linPathFlux(mt, linPath, solt.x);
     qMat(i, :) = qVec;
     fluxMat(:, i) = solt.x;
@@ -96,7 +109,6 @@ modName = strrep(strrep(strrep(strrep(num2str(m.description), ' ', ''), ...
 
 save(['PyruvateAll_' modName '_' m.rxnNames{itermet} '_' ...
       num2str(nIter) '.mat'], 'qMat', 'fluxMat', 'pathInfo');
-
 
 end % of SSPyruvateAll
 
