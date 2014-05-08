@@ -1,4 +1,4 @@
-1) Simulate more conditions
+*1* Simulate more conditions
 
 Rev1: - variations of WT growth rate for each condition
       - variations of mutational severity (did we do this)?
@@ -12,6 +12,7 @@ Three alternatives:
 0) (Simplest) Cite previous paper showing relative positive epistasis invariance 
    for non-null mutants, and do maximum condition specific growth simulations as
    a control. This only doubles the number of simulations needed. 
+   For this we can modify singleDel.m and uptakeByGrowth.m to accomplish what we need.
 1) Extesnive sampling across a subset of genes
 2) Random sampling of gene pairs (exclude those without any known epistasis),
    WT level, and mutation level (same for both pairs?).
@@ -24,3 +25,6 @@ Three alternatives:
    - Can still get an idea of mean and variance of differential epistasis 
      for each gene. 
    - Similar to adaptive epistasis code (may be good to integrate).
+
+
+
