@@ -6,9 +6,12 @@ Rev1: - variations of WT growth rate for each condition
 Rev2: basically the same
   
 
-Can we do any sort of random samply approach, or cite our previous paper?
+Can we do any sort of random sampling approach, or cite our previous paper?
 
 Three alternatives:
+0) (Simplest) Cite previous paper showing relative positive epistasis invariance 
+   for non-null mutants, and do maximum condition specific growth simulations as
+   a control. This only doubles the number of simulations needed. 
 1) Extesnive sampling across a subset of genes
 2) Random sampling of gene pairs (exclude those without any known epistasis),
    WT level, and mutation level (same for both pairs?).
