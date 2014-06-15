@@ -58,7 +58,7 @@ for i = 1:(length(uptRxn) + 1)
     soltmp = mmsolWT;
   end
   if length(soltmp.x) > 1
-    sdFlux = singleGeneMutation8_flux(mmTMP,'FBA',soltmp.x,0,[0]);
+    sdFlux = singleGeneMutation_flux(mmTMP,'FBA',soltmp.x,0,[0]);
     FluxMat(:,i) = columnVector(soltmp.x);
     SDMat(:,i) = columnVector(sdFlux(:,1577));
   end
