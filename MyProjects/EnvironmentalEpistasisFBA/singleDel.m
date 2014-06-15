@@ -1,11 +1,17 @@
-growPerc = 20;
+%growPerc = 20;
+%
+% if undefined, instead of using growPerc*WT/100 as the
+% growth rate, use a 'maximum' growthrate for that
+% condition.
+
 mmEthNone = mmEth;
 mmEthNone.lb(536)=0;
 mmNone = mm;
 mmNone.lb(550)=0;
 mods = {mmNone, mmEthNone, mm};
 
-mmsolWT = optimizeCbModel(mm,'max','one');
+mmsolWT = optimizeCbModel(mm, 'max', 'one');
+fMax = -1;
 
 %Uptake abbreviates:
 abbr = {'Eth', 'Glyc', 'SAdeMeth', 'Acetald', 'Acetate', 'Trehalose', ...
@@ -33,9 +39,20 @@ for i = 1:(length(uptRxn) + 1)
     met = abbr(i)
     mmTMP = mods{mID};
     %disp([met rxn]);
-    uptBnd = uptakeByGrowth(mmTMP,[growPerc],rxn,mmsolWT.f);
-    mmTMP.lb(rxn) = uptBnd;
-    soltmp = optimizeCbModel(mmTMP,'max','one');
+    if exist('growPerc', 'var')
+      uptBnd = uptakeByGrowth(mmTMP, [growPerc], rxn, mmsolWT.f);
+      mmTMP.lb(rxn) = uptBnd;
+      soltmp = optimizeCbModel(mmTMP, 'max', 'one');
+    else
+      mmTMP.lb(rxn) = -1000;
+      soltmp = optimizeCbModel(mmTMP, 'max', 'one');
+      %if a high-energy molecule, constrain appropriately:
+      if soltmp.f > 1.1 * mmsolWT.f
+        uptBnd = uptakeByGrowth(mmTMP, [100], rxn, mmsolWT.f);
+        mmTMP.lb(rxn) = uptBnd;
+        soltmp = optimizeCbModel(mmTMP, 'max', 'one');
+      end
+    end
   else
     mmTMP = mm;
     soltmp = mmsolWT;

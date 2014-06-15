@@ -31,14 +31,16 @@ for i = 1:length(growthPerc)
   mtmp.lb(bpos)=maxfit*growthPerc(i)/100;
   if length(limitNutrient) > 1
     for j = 1:length(limitNutrient)
-      mtmp.c(limitNutrient(j)) = 1/solWT.x(limitNutrient(j)); %why is this 1/limitNutrient? Shouldn't really matter
+      %why is this 1/x(limitNutrient)? Shouldn't really matter
+      mtmp.c(limitNutrient(j)) = 1/solWT.x(limitNutrient(j)); 
       mtmp.lb(limitNutrient(j)) = -1000;
     end
   else
     mtmp.c(limitNutrient)=1;
     mtmp.lb(limitNutrient) = -1000;
   end
-  %depending on exchange reaction format in model, may need to minimize or maximize.
+  %depending on exchange reaction format in model, may need to
+  %minimize or maximize.
   solt = optimizeCbModel(mtmp,otype);
   if length(solt.x) > 1
     if length(limitNutrient) > 1
