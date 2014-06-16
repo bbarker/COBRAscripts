@@ -1,4 +1,4 @@
-function grRateKOTens = doubleGeneMutationIsoAvg5(model,method, fitvals1, fitvals2, WTflux, dlvl, geneList1,geneList2,enzConstraint)
+function grRateKOTens = doubleGeneMutationIsoAvg(model,method, fitvals1, fitvals2, WTflux, dlvl, geneList1,geneList2,enzConstraint)
 %doubleGeneMutation Performs double gene deletion analysis using FBA, MOMA,
 %or linear MOMA
 %

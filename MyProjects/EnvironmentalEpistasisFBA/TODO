@@ -12,7 +12,11 @@ Three alternatives:
 0) (Simplest) Cite previous paper showing relative positive epistasis invariance 
    for non-null mutants, and do maximum condition specific growth simulations as
    a control. This only doubles the number of simulations needed. 
-   For this we can modify singleDel.m and uptakeByGrowth.m to accomplish what we need.
+   For this we can modify singleDel.m and uptakeByGrowth.m to accomplish what we need
+   -- Actually, singleDel.m is only a template for running the rest of the simulations,
+      but getting it to work is a good start: next is to copy 
+      variedUptakeEpiSim calls in to it. For now, make a doubleDel.m function,
+      and consider merging with singleDel.m later to remove code duplication.
 1) Extesnive sampling across a subset of genes
 2) Random sampling of gene pairs (exclude those without any known epistasis),
    WT level, and mutation level (same for both pairs?).

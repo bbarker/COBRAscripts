@@ -43,7 +43,10 @@ if nargin < 7
     grRateWT(i) = solt.f;
     mtmp.lb(find(model.c)) = solt.f; %Only works for single-valued objective functions
     disp(strcat('Starting geometric WT sim ',num2str(i)));
-    fluxtmp =  geometricFBA2(mtmp);
+    fluxtmp =  geometricFBA(mtmp);
+    if numel(fluxtmp) < 1
+      fluxtmp = optimizeCbModel(mtmp, 'max', 'one');
+    end
     if norm(fluxtmp,1) < 1e-7
       sol1n = optimizeCbModel(mtmp,'max','one'); 
       WTFlux(i,:) = (sol1n.x)';
@@ -75,7 +78,7 @@ if nargin < 8
     else
       mtmp.ub(rxnid) = A(i);
     end
-    dtmp = doubleGeneMutationIsoAvg7(mtmp, method, [fredux], [fredux], squeeze(WTFlux(i,:)), dlvl);
+    dtmp = doubleGeneMutationIsoAvg(mtmp, method, [fredux], [fredux], squeeze(WTFlux(i,:)), dlvl);
     grData(i,:,:) = dtmp;
     disp(i);
   end
