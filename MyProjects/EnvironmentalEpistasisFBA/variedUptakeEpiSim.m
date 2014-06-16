@@ -63,10 +63,6 @@ if nargin < 7
   end
 end
 
-
-%just in case:
-changeCobraSolver('gurobi','LP');
-
 if nargin < 8
   grData = zeros(lA,ngen,ngen);
   %put parfor back here later
