@@ -10,8 +10,9 @@ mmNone = mm;
 mmNone.lb(550)=0;
 mods = {mmNone, mmEthNone, mm};
 
+lowerBoundMax = 1000;
 mmsolWT = optimizeCbModel(mm, 'max', 'one');
-fMax = -1;
+
 
 %Uptake abbreviates:
 abbr = {'Eth', 'Glyc', 'SAdeMeth', 'Acetald', 'Acetate', 'Trehalose', ...
@@ -30,7 +31,7 @@ uptRxn = [536, 555, 507, 499, 498, 632, ...
 SDMat = zeros(length(mm.genes), length(uptRxn)+1);
 FluxMat = zeros(length(mm.rxns), length(uptRxn)+1);
 
-cell2csv('SingleDeletions.csv',abbr,',',2000);
+cell2csv('SingleDeletions.csv',abbr,',');
 
 for i = 1:(length(uptRxn) + 1)
   if i <= length(uptRxn)
@@ -44,7 +45,7 @@ for i = 1:(length(uptRxn) + 1)
       mmTMP.lb(rxn) = uptBnd;
       soltmp = optimizeCbModel(mmTMP, 'max', 'one');
     else
-      mmTMP.lb(rxn) = -1000;
+      mmTMP.lb(rxn) = -lowerBoundMax;
       soltmp = optimizeCbModel(mmTMP, 'max', 'one');
       %if a high-energy molecule, constrain appropriately:
       if soltmp.f > 1.1 * mmsolWT.f
