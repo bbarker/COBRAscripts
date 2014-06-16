@@ -95,7 +95,7 @@ for i=1:lA
     end
   %Could optimize the single-mutation code below ... but premature optimization and all that
   disp(strcat('Entering single mutant calc ', num2str(i)));
-  grSingleMut = singleGeneMutation8(mtmp,method,squeeze(WTFlux(i,:)),dlvl);
+  grSingleMut = singleGeneMutation_flux(mtmp,method,squeeze(WTFlux(i,:)),dlvl);
   grSingleMutrev = zeros(ngen,ngen,10);
   for k = 1:ngen
     for j = 1:ngen
