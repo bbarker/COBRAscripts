@@ -1,7 +1,5 @@
 function epiData = variedUptakeEpiSim(model, method, savename, rxnid, A, fredux, WTFlux, grData)
-%!!!Consider saving other phenotypes after this works
-%!!!This may take some constructive saving to avoid memory issues:
-%perhaps, create a directory or file for each cell and save the simulation result there
+
 dlvl = 0.01
 scaled = 0;
 

@@ -61,6 +61,8 @@ for i = 1:(length(uptRxn) + 1)
   else
     mmTMP = mm;
     soltmp = mmsolWT;
+    rxn = 607;
+    uptBnd = mmsolWT.x(rxn);
   end
   if length(soltmp.x) > 1
     savename = ['grSC' abbr{i} num2str(mutLevel) 'x' num2str(mutLevel)];
