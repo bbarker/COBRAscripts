@@ -1,0 +1,12 @@
+### Testing G x G accuracy ###
+Add weights to FALCON, and a script to do a binary search (or golden
+section) to find the appropriate weight to get a paritcular flux
+(biomass) value.
+
+Finish the makeKishonyDeLunaModel.m script.
+
+Test DeLuna single mutant fitnesses, then epistasis, against
+FALCON-predicted values.
+----------------------------------------------
+
+Try original method with FALCON-estimated flux vector.
