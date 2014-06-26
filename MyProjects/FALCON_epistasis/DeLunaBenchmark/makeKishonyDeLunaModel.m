@@ -8,6 +8,11 @@ modelOut = modelIn;
 % Some constants
 LBmin = -1000;
 
+
+%
+% Correct to appropriate genetic background (TODO!)
+%
+
 % Adjust glucose uptake:
 idx = find(strcmp(modelOut.rxnNames, 'D-glucose exchange'));
 modelOut.lb(idx) = -10;
