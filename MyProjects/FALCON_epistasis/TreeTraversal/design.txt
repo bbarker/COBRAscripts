@@ -1,0 +1,31 @@
+
+Parallelism: 
+Priority Queue is probably too granular for doing a BFS; probably a large overhead.
+Use serial BFS, and since we have a large number of simulations, make it parallel
+across the simulations.
+
+Algorithm: should be like a BFS (i.e. use a queue), 
+except we don't keep track of whether a node is visited or not.
+!!!Actually, may want to use a stack, to get a DFS, which should reduce the
+memory footprint.  Since we aren't really doing just a search when we print paths, 
+this matters, and a DFS is better at "finishing" paths subsequently rather than
+concurrently.
+
+Counting Paths: 
+Each path needs a unique id? No, just increment sum whenever a path reaches the optimal node.
+Similarly, keep another sum for verification that counts whenever we terminate before then.
+
+Printing Paths (or data along a path):
+(For smaller node sets only);
+
+
+!!! Check Hartl's definition of selectively feasible
+Data:
+Last fitness less than current fitness.
+
+
+Functions:
+Check 
+
+
+
