@@ -1,4 +1,4 @@
-function [mutDat, numFound] = randomSingleBeneMuts(model, InitFlux, minFlux, maxFlux, sthresh, initR, sampType, percInBnd)
+function [mutDat, numFound] = randomSingleBeneMuts(model, InitFlux, minFlux, maxFlux, sthresh, initR, sampType, fracInBnd)
 rmpath('/home/brandon/FBA/mosek/6/toolbox/r2009b/');
 doDel = true;
 objWeight=0; %!!!!
@@ -17,7 +17,7 @@ if nargin<7
 end
 
 if nargin<8
-  percInBnd = 0.95
+  fracInBnd = 0.95
 end
 
 %Use == for mutation restrictions.
@@ -54,7 +54,7 @@ for i = initR:nGRxns
   if FVAwidth > zthresh
     sigma = 0;
     if strcmp(sampType,'truncnorm')
-      sigma = findSigma(InitFlux(rxnNum1), minFlux(rxnNum1), maxFlux(rxnNum1), percInBnd);
+      sigma = findSigma(InitFlux(rxnNum1), minFlux(rxnNum1), maxFlux(rxnNum1), fracInBnd);
     end
     while (filled < nDesired) & (iter < maxIterTmp)
       tmpvec = zeros(nDesired,3);

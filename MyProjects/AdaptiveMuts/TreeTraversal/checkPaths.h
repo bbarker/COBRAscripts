@@ -1,6 +1,7 @@
 #ifndef __CHECKPATHS__
 #define __CHECKPATHS__
 
+#include <stdio.h>
 
 //short should be ok for up to 16 digits on this system
 //change to #define later
